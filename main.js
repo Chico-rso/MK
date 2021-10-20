@@ -1,5 +1,6 @@
 const player1 =
 {
+	player: 1,
 	name: 'scorpion',
 	hp: 100,
 	img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -11,6 +12,7 @@ const player1 =
 };
 const player2 =
 {
+	player: 2,
 	name: 'subzero',
 	hp: 100,
 	img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
@@ -20,33 +22,78 @@ const player2 =
 		console.log(`${this.name} 'Fight...'`)
 	},
 };
-function createPlayer(playerClass, player1)
-{
-	const player = document.createElement('div'),
-		  progressbar = document.createElement('div'),
-		  character1 = document.createElement('div'),
- 		  life = document.createElement('div'),
-		  name = document.createElement('div'),
-		  img = document.createElement('img'),
-		  arenas = document.querySelector('.arenas');
+const arenas = document.querySelector('.arenas');
+const randomButton = document.querySelector('.button');
 
-	player.classList.add('playerClass');
-	player.className = playerClass;
-	life.className = 'life';
-	name.className = 'name';
-	character1.className = 'character';
-	progressbar.className = 'progressbar';
-	img.src = player1.img;
-	name.innerText = player1.name;
-	life.style.width = player1.hp + '%';
+function createElement(tag, className)
+{
+	const tag1 = document.createElement(tag);
+	if(className)
+	{
+		tag1.classList.add(className);
+	}
+
+	return tag1;
+};
+
+function createPlayer(playerObj)
+{
+	const player = createElement('div','player'+ playerObj.player),
+		  progressbar = createElement('div', 'progressbar'),
+		  character = createElement('div', 'character'),
+ 		  life = createElement('div', 'life'),
+		  name = createElement('div', 'name'),
+		  img = createElement('img');
+
+	img.src = playerObj.img;
+	name.innerText = playerObj.name;
+	life.style.width = playerObj.hp + '%';
 
 	player.appendChild(progressbar);
-	player.appendChild(character1);
+	player.appendChild(character);
 	progressbar.appendChild(name);
 	progressbar.appendChild(life);
-	character1.appendChild(img);
-	arenas.appendChild(player);
-	console.log(character1);
+	character.appendChild(img);
+
+	return player;
+
 }
-createPlayer('player1',player1);
-createPlayer('player2', player2);
+function changeHp (player)
+{
+	const playerLife = document.querySelector('.player' + player.player +' .life');
+	console.log(player.hp)
+	player.hp -= Math.ceil(Math.random() * 20);
+	playerLife.style.width = player.hp + '%';
+
+
+
+	if (player.hp <= 0){
+		playerLife.style.width = 0 + '%';
+		randomButton.disabled = true;
+        if (player1.hp >= 1){
+           arenas.appendChild(playerWin(player1.name));
+        }else{
+           arenas.appendChild(playerWin(player2.name));
+        }
+    }
+}
+function playerWin(name)
+{
+	const winTitle = createElement('div', 'winTitle');
+	winTitle.innerText = name + 'Wins';
+console.log(winTitle);
+		return winTitle;
+}
+randomButton.addEventListener('click', function ()
+{
+	console.log('####: Click Random Button');
+	changeHp(player1);
+	changeHp(player2);
+});
+
+arenas.appendChild(createPlayer(player1));
+arenas.appendChild(createPlayer(player2));
+
+
+player1.atack();
+player2.atack();
